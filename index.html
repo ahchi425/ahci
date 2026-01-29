@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>每日一信</title>
+    <body>
+  <div class="phone-border"></div> <!-- 只加这1行，单独放，别和其他代码连一起 -->
+  </div>
+</body>
     <style>
         * {
             margin: 0;
@@ -14,6 +18,7 @@
             width: 100%;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 2%;
@@ -21,6 +26,14 @@
             background: #d2cbed;
             perspective: 1000px;
             flex-wrap: nowrap; /* 强制3张同行，不换行 */
+            /*新增*/
+            border-top: 60px solid #786082;
+            border-bottom: 60px solid #786082;
+            border-left: 10px solid #786082;
+            border-right: 10px solid #786082;
+            border-radius: 4px;
+            padding: 8px;
+            box-sizing: border-box;
         }
         .card {
             width: 30%; /* 3张均分宽度，适配所有屏幕 */
@@ -63,13 +76,18 @@
         .card-back {
             background: #b8a5c2;
             transform: rotateY(180deg);
-            font-size: 1.8vw; /* 背面文字稍小，避免溢出 */
+            font-size: 2.8vw; /* 背面文字稍小，避免溢出 */
             line-height: 1.4; /* 行间距，适配多文字 */
         }
     </style>
 </head>
 <body>
     <div class="card-container">
+        <!-- 新增的无背景标题盒子，直接插在三张卡片上方 -->
+<div style="width:100%; background:transparent; padding:0; margin:0 0 15px 0; text-align:center;">
+  <p style="font-size:16px; color:#666; font-family:思源宋体, SimSun, 宋体, serif; font-style:italic; text-decoration:underline; margin:0; padding:0;">每日一信</p >
+</div>
+<div style="display:flex; justify-content:center; gap:2%; align-items:center; width:100%;">
         <!-- 卡片1：Ta的便签 - 正面固定文字 -->
         <div class="card flip-card" data-card="luck">
             <div class="card-front card1-front">今日心声<br>查询</div>
@@ -85,6 +103,7 @@
             <div class="card-front card3-front">今日行为<br>查询</div>
             <div class="card-back"></div>
         </div>
+</div>
     </div>
 
     <script>
@@ -151,7 +170,6 @@
                 "牵肠挂肚",
                 "忧思过重",
                 "梦魇缠身",
-                "触景生情",
                 "劳逸结合",
                 "养精蓄锐",
                 "忙里偷闲",
@@ -166,11 +184,11 @@
                 "看你照片",
                 "工作中",
                 "正在网购",
-                "吃饭中",
+                "触景生情",
                 "在看书",
                 "整理房间",
-                "开车中",
-                "走神",
+                "在路上",
+                "在思考",
                 "写日记",
                 "努力健身",
                 "网抑云中",
@@ -205,5 +223,9 @@
         });
     </script>
 </body>
+</html>
+    </script>
+</body>
 
 </html>
+
