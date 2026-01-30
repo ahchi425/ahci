@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>来自何星の便签盒子</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimSun", sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background-color: #ebeb9e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .outer-big-box {
+            width: 92%;
+            max-width: 450px;
+            height: 460px;
+            background-color: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.03);
+            position: relative;
+            padding: 25px 20px 20px;
+            overflow: hidden; /* 隐藏盒子外的初始图片，避免漏出 */
+        }
+        .box-title {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            white-space: nowrap;
+        }
+        .inner-note-box {
+            width: 80%;
+            height: 150px;
+            background-color: #f6fdcd;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, calc(-50% + 30px));
+            overflow: hidden;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .note-box-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #3d57ab;
+            letter-spacing: 2px;
+            transform: translateY(-8px);
+        }
+        .card {
+            width: 70%;
+            height: 130px;
+            background-color: #fff9e6;
+            border: 1px solid #fbd89f;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(251, 216, 159, 0.35);
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px;
+            transition: transform 0.6s cubic-bezier(0.2, 0.85, 0.4, 1);
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .card.pop {
+            transform: translate(-50%, calc(-50% - 90px));
+        }
+        #pop-btn {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 35px;
+            background-color: #ffffff;
+            color: #4593e6;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(255, 109, 63, 0.25);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            touch-action: manipulation;
+            z-index: 3;
+        }
+        #pop-btn:active {
+            transform: translateX(-50%) translateY(3px) scale(0.98);
+            box-shadow: 0 1px 3px rgba(255, 109, 63, 0.4);
+            background-color: #f9f9f9;
+        }
+
+        /* 图片核心样式：透明+置顶+滑入滑出动画（关键修复） */
+        .box-left-img {
+            position: absolute;
+            left: 20px;
+            bottom: 20px; /* 最终显示位置：盒子左下内侧 */
+            z-index: 99; /* 置顶不被遮挡 */
+            width: 80px;
+            height: auto;
+            background: transparent; /* 彻底去背景 */
+            box-shadow: none;
+            border-radius: 8px;
+            /* 动画和便签完全同步 */
+            transition: all 1s cubic-bezier(0.2, 0.85, 0.4, 1);
+            transform: translateY(100px); /* 初始位置：盒子下方（完全隐藏） */
+            opacity: 0; /* 初始透明 */
+        }
+        /* 显示状态：上滑到目标位置+完全不透明 */
+        .box-left-img.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .box-left-img img {
+            width: 100%;
+            height: auto;
+            object-fit: contain; /* 保留透明背景，不变形 */
+            background: transparent;
+            border-radius: 8px;
+            /* 便签文字样式：支持<br>换行+居中 */
+.card-text {
+    font-size: 10px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.8; /* 行间距拉开，换行更美观 */
+    text-align: center;
+}
+/* 局部划掉样式（想划哪段套这个类） */
+.strike {
+    text-decoration: line-through;
+    text-decoration-color: #4593e6; /* 和按钮同色，更协调 */
+    text-decoration-thickness: 2px;
+}
+        }
+    </style>
+</head>
+<body>
+    <div class="outer-big-box">
+        <div class="box-title">何星の便签盒</div>
+        <div class="card">
+            <div class="card-text" id="random-text"></div>
+        </div>
+        <div class="inner-note-box">
+            <div class="note-box-text"><span style="padding-left: 5.2vw;">捡到请立刻</span><br>归还给KW何星</div>
+            <button id="pop-btn">弹出便签</button>
+        </div>
+        <!-- 图片容器：src保持你的图片名 -->
+        <div class="box-left-img" id="boxLeftImg">
+            <img src="hexin.jpg.jpg" alt="盒子左下角图片">
+        </div>
+    </div>
+
+    <script>
+        const popBtn = document.getElementById('pop-btn');
+        const card = document.querySelector('.card');
+        const randomTextEl = document.getElementById('random-text');
+        const boxLeftImg = document.getElementById('boxLeftImg');
+        let isPopped = false;
+
+        // 好运文案库
+        const luckTextLibrary = [
+            "下午四点舞室,kopo", 
+            "今日减脂餐:<br>全麦面包<br>(真的是人类吃的的东西吗)",
+            "红毯加油<br>今晚你星哥<br>必须狠狠上热搜！！！",
+            "黄佳慧已欠:267.25<br>还款日未定",
+            "明早九点<br>八楼会议室<br>组会", 
+            "这个月工资已扣:300元<br><span class='strike'>KW什么时候倒闭!</span>", 
+            "(^_^)", 
+            "老板同事在天堂....",
+            "下周降温<br>再见了破洞裤", 
+            "晚上楼下面包店<br>买一送一", 
+            "综艺<br>我不是歌神<br>青春大秀<br>明星访谈", 
+            "晚上<br>公司后街大排档<br>撸串<br>黄佳慧请客！",
+            "下周签售会<br>记得准备小礼物",
+            "这周四之前要更新抖音<br>不想拍弱智小视频....",
+            "游戏周四更新卡池",
+            "不能再演傻子了<br>我的人设什么时候从<br>酷哥变成傻子的...",
+            "明天<br>录音室<br>录和尹未真的合作曲",
+            "周五直播",
+            "昨天吃的蛋挞<br>好美味，今天还吃",
+            "下个月公司团建<br>去徒步<br>记得买装备",
+            "和赵执缨拼团买的凤爪<br>30r",
+            "周六行程：<br>小韩烫头<br>扫货<br>拍vlog",
+            "中午记得看深渊大饭堂"
+        ];
+
+        // 随机获取文案
+        function getRandomLuckText() {
+            const randomIndex = Math.floor(Math.random() * luckTextLibrary.length);
+            return luckTextLibrary[randomIndex];
+        }
+
+        // 点击事件：无限触发+动画同步（无任何多余逻辑）
+        popBtn.addEventListener('click', () => {
+            if (!isPopped) {
+                // 便签上滑+文案刷新
+                randomTextEl.innerHTML = getRandomLuckText();
+                card.classList.add('pop');
+                popBtn.innerText = '收回便签';
+                // 图片上滑出现
+                boxLeftImg.classList.add('show');
+                isPopped = true;
+            } else {
+                // 便签下滑收回
+                card.classList.remove('pop');
+                popBtn.innerText = '弹出便签';
+                // 图片下滑消失
+                boxLeftImg.classList.remove('show');
+                isPopped = false;
+            }
+        });
+    </script>
+</body>
+</html>
